@@ -1,0 +1,64 @@
+channel coin , choc
+
+VMEvents = {coin , choc }
+
+BrokenVM = coin -> STOP
+
+ANewProcess = coin -> coin -> STOP
+
+BetterVM =
+  coin ->
+    choc ->
+      coin ->
+        choc -> STOP
+
+
+Example = coin [] toffee -> STOP
+
+channel toffee
+
+OptionVMEvents = {coin , choc , toffee }
+
+OptionVM =
+  coin -> (
+    choc -> OptionVM
+    []
+    toffee -> OptionVM )
+
+
+BadOptionVM =
+  coin -> (
+    choc -> BadOptionVM
+    |~|
+    toffee -> BadOptionVM )
+
+
+PeculiarVM =
+  coin -> (
+    choc -> ( BadOptionVM |~| OptionVM )
+    |~|
+    toffee -> OptionVM )
+
+
+
+
+channel in50p, out50p
+channel in100p
+channel smallChoc, largeChoc
+
+ComplicatedVMEvents =
+{ in100p , in50p , largeChoc , smallChoc , out50p }
+
+
+CompVM =
+  in100p -> ( largeChoc -> CompVM
+              []
+              smallChoc -> out50p -> CompVM )
+  []
+  in50p -> ( smallChoc -> CompVM
+             []
+             in50p -> ( largeChoc -> CompVM
+                        []
+                        in50p -> STOP ) )
+
+
